@@ -2,6 +2,7 @@ let fs = require("fs");
 const Map = require("./Map/Map");
 const Tile = require("./Tile/Tile");
 const Adventurer = require("./Adventurer/Adventurer");
+const {isNumber} = require("./Share/Utils");
 
 function readInputFile(filename) {
   const data = fs.readFileSync(filename, "utf8");
@@ -15,29 +16,25 @@ function readInputFile(filename) {
 
   for (let line of lines) {
     // Split the line into an array and delete the spaces
-    let parts = line.split("-").map((part) => part.trim());
+    let parts = line.split("-").map((part) => isNumber(part.trim()));
 
     switch (parts[0]) {
       case "C":
-        map = new Map(parseInt(parts[1]), parseInt(parts[2]));
+        map = new Map(parts[1], parts[2]);
         map.initialize();
         break;
       case "M":
-        map.placeMountain(parseInt(parts[1]), parseInt(parts[2]));
+        map.placeMountain(parts[1], parts[2]);
         break;
       case "T":
-        map.placeTreasure(
-          parseInt(parts[1]),
-          parseInt(parts[2]),
-          parseInt(parts[3])
-        );
+        map.placeTreasure(parts[1], parts[2], parts[3]);
         break;
       case "A":
         parts[5] = parts[5].trim().split("");
         let adventurer = new Adventurer(
           parts[1],
-          parseInt(parts[2]),
-          parseInt(parts[3]),
+          parts[2],
+          parts[3],
           parts[4],
           parts[5]
         );
@@ -89,7 +86,6 @@ function simulateAdventure(inputFileName, outputFileName) {
       }
     }
   }
-
   writeOutputFile(outputFileName, map, adventurers);
 }
 
